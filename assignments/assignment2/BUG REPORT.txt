@@ -1,0 +1,38 @@
+BUG REPORT
+
+Bug #1:
+- Bug where there you occasionally are no longer able to drop any bombs
+- If the bomb does not hit any buildings, then the bomb will continue to fall forever. There is no check if the bomb hits the floor, and since you cannot release a bomb while the last bomb is still falling, you no longer can release a bomb.
+- You can reproduce this bug by timing a bomb drop so that it falls in the small gap between buildings
+
+Bug #2 
+- Plane spawn on the right hand sides makes it impossible to bomb the rightmost building
+- When the plane wraps round from the left side of the screen, the entire plane appears on the right side at once, instead of steadily coming into view from the right side
+- The bug is always reproduced on every load of the game
+
+Bug #3 
+- You can spawn bombs outside the screen
+- This makes it especially difficult to bomb the rightmost buildings since if you time it too early, you must wait for the bomb to fall to the ground before deploying another bomb
+- You shouldn't be able to spawn bombs outside the screen because you aren't able to easily see the reason why your plane cannot drop bombs once it appears again on the right side of the screen
+- You can replicate by dropping a bomb the moment the nose of the plane is hidden by the left hand side of the screen
+
+Bug #4
+- Building spawns off screen on the right hand side
+- This building is impossible to bomb due to how the plane spawns, and as well as that, the building is very difficult to notice so you may game over by crashing it, which can be confusing
+- Buildings where you cannot see both the left and right corners of it should not be spawned in
+- The bug is always reproduced on every load of the game
+
+Bug #5
+- Impossible to complete the level
+- The level will only end if the plane is at an exact y level, although the level should also end if the plane's y level is also lower than that y level
+- The bug can be reproduced by completely flattening all of the buildings in the level, as if completing the level
+
+Bug #6
+- Restarting doesn't delete falling bombs
+- Once you restart the game by pressing 'r', bombs from the previous round remain falling, although they should be cleared along with the entire screen
+- This bug can be reproduced by restarting just after releasing a bomb
+
+Bug #7
+- Restarting does not work until you game over or complete a level
+- This is because the way that restarting is implemented requires for the game over/level complete text to be deleted, but this text is undefined until you actually game over
+- You can replicate this bug by pressing 'r' when you initially start a round, and you'll find that the button does nothing

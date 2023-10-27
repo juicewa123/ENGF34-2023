@@ -169,7 +169,7 @@ class Plane():
     def move(self):
         self.position.move(-4 * speed, 0)
         if self.position.getX() < -self.width:
-            self.position.move(CANVAS_WIDTH, 40)
+            self.position.move(CANVAS_WIDTH+self.width, 40)
             #ensure we don't go off the bottom of the screen
             if self.position.getY() > CANVAS_HEIGHT:
                 self.position.Y = CANVAS_HEIGHT
@@ -192,7 +192,7 @@ class Display(Frame):
         self.rand = Random()
 
         #create game objects
-        self.plane = Plane(self.canvas, CANVAS_WIDTH - 100, 0)
+        self.plane = Plane(self.canvas, CANVAS_WIDTH+100, 0)
         self.bomb = Bomb(self.canvas)
         self.buildings = []
         self.building_width = SPACING * 0.8
@@ -223,13 +223,14 @@ class Display(Frame):
             building.cleanup()
 
         #create the new ones
-        for building_num in range(0, 1200//SPACING):
+        for building_num in range(0, CANVAS_WIDTH//SPACING):
             height = self.rand.randint(10,500) #random number between 10 and 500
             self.buildings.append(Building(self.canvas, building_num, height,
                                            self.building_width))
 
     def drop_bomb(self):
-        self.bomb.drop(self.plane.position)
+        if self.plane.position.getX() >= 0:
+            self.bomb.drop(self.plane.position)
 
     ''' check the state of the bomb each frame '''
     def check_bomb(self):
@@ -240,6 +241,10 @@ class Display(Frame):
             if building.is_inside(self.bomb.position):
                 self.bomb.explode()
                 building.shrink()
+
+        # did the bomb hit the floor without hitting anything?
+        if self.bomb.position.getY() >= CANVAS_HEIGHT:
+            self.bomb.explode()
 
     ''' check the state of the plane each frame '''
     def check_plane(self):
@@ -254,9 +259,9 @@ class Display(Frame):
         for building in self.buildings:
             if (building.is_inside(plane_nose)
                 or building.is_inside(plane_body_bottom)
-                or building.is_inside(plane_wing)):
+                or building.is_inside(plane_wing)) and building.height > 0:
                 self.game_over()
-        if plane_body_bottom.getY() == CANVAS_HEIGHT and plane_body_bottom.getX() < 20:
+        if plane_body_bottom.getY() >= CANVAS_HEIGHT and plane_body_bottom.getX() < 20:
             self.plane_landed()
 
     ''' game_over is called when the plane crashes to stop play and display the 
@@ -281,11 +286,16 @@ class Display(Frame):
 
     ''' restart is called after game over to start a new game '''
     def restart(self):
-        self.canvas.delete(self.text)
+        try:
+            self.canvas.delete(self.text)
+        except AttributeError:
+            pass
+            
         self.level = 1
         self.score = 0
         self.plane.reset_position()
         self.building_width = SPACING * 0.8
+        self.bomb.explode()
         self.create_buildings()
         self.won = False
         self.game_running = True
